@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. Base de Datos MySQL
+  mysqldb:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: eva2
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - eva-network
+
+  # 2. Backend (Java) - Busca el Dockerfile en la carpeta backend
+  backend-app:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/eva2?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+    networks:
+      - eva-network
+
+  # 3. Frontend (Nginx) - Busca el Dockerfile en la carpeta frontend
+  frontend-app:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-app
+    networks:
+      - eva-network
+
+networks:
+  eva-network:
+
+volumes:
+  mysql_data:
