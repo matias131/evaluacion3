@@ -1,12 +1,11 @@
 version: '3.8'
 
 services:
-  # 1. Base de Datos MySQL
   mysqldb:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_DATABASE: eva2
+      MYSQL_DATABASE: eva3
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
       - "3307:3306"
@@ -14,22 +13,27 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - eva-network
+    healthcheck:
+      test: "mysqladmin ping -h localhost -u root -prootpassword > /dev/null 2>&1"
+      interval: 30s
+      timeout: 20s
+      retries: 10
 
-  # 2. Backend (Java) - Busca el Dockerfile en la carpeta backend
   backend-app:
     build: ./backend
     ports:
       - "8080:8080"
+    restart: always
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/eva2?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/eva3?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: rootpassword
     networks:
       - eva-network
 
-  # 3. Frontend (Nginx) - Busca el Dockerfile en la carpeta frontend
   frontend-app:
     build: ./frontend
     ports:

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo Clientes</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: middle; }
+        th { background-color: #f2f2f2; }
+        button { background-color: #4CAF50; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #45a049; }
+        input[type="number"] { width: 50px; padding: 5px; }
+        select { padding: 5px; }
+        .volver { display: inline-block; margin-top: 20px; text-decoration: none; color: #333; font-weight: bold;}
+        #mensaje-exito { margin-top: 15px; padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+<h1>Catálogo de Muebles</h1>
+<div id="catalogo">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th> <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Tamaño</th> <th>Precio Base</th>
+            <th>Stock</th>
+            <th>Variante (Opcional)</th>
+            <th>Cantidad</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody id="tabla-muebles"></tbody>
+    </table>
+</div>
+<div id="mensaje-exito"></div>
+<br> <a href="Menu.html" class="volver">← Volver al Menú</a>
+
+<script>
+    let variantesGlobales = [];
+
+    fetch('/api/variantes').then(res => res.json()).then(data => {
+        variantesGlobales = data;
+        cargarMuebles();
+    });
+
+    function cargarMuebles() {
+        fetch('/api/muebles').then(response => response.json()).then(data => {
+            const tabla = document.getElementById('tabla-muebles');
+            tabla.innerHTML = '';
+
+            data.forEach(mueble => {
+                if(mueble.estado === 'ACTIVO' && mueble.stock > 0) {
+
+                    let opciones = '<option value="">-- Ninguna --</option>';
+                    variantesGlobales.forEach(v => {
+                        opciones += `<option value="${v.idVariante}">${v.nombre} (+$${v.costoAdicional})</option>`;
+                    });
+
+                    const row = `<tr>
+                            <td>#${mueble.idMueble}</td> <td>${mueble.nombreMueble}</td>
+                            <td>${mueble.tipo}</td>
+                            <td>${mueble.tamano}</td> <td>$${mueble.precioBase}</td>
+                            <td>${mueble.stock}</td>
+                            <td><select id="var-${mueble.idMueble}">${opciones}</select></td>
+                            <td><input type="number" id="cant-${mueble.idMueble}" min="1" max="${mueble.stock}" value="1"></td>
+                            <td><button onclick="procesarCompra(${mueble.idMueble})">Comprar</button></td>
+                        </tr>`;
+                    tabla.innerHTML += row;
+                }
+            });
+
+            if(tabla.innerHTML === '') {
+                tabla.innerHTML = '<tr><td colspan="9" style="text-align:center;">No hay muebles disponibles.</td></tr>';
+            }
+        });
+    }
+
+    function procesarCompra(id) {
+        const cant = document.getElementById(`cant-${id}`).value;
+        const vari = document.getElementById(`var-${id}`).value;
+        const msg = document.getElementById('mensaje-exito');
+
+        if (cant > 0) {
+            const variantes = vari ? [{ idVariante: parseInt(vari) }] : [];
+            const orden = { detalles: [{ mueble: { idMueble: id }, cantidad: parseInt(cant), variantes: variantes }] };
+
+            fetch('/api/cotizaciones', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orden)
+            }).then(res => res.json()).then(data => {
+                msg.style.display = 'block';
+                msg.innerHTML = `<strong>¡Pedido Enviado!</strong> ID: #${data.idCotizacion} | Total: $${data.totalCotizacion}`;
+                setTimeout(() => { msg.style.display = 'none'; location.reload(); }, 3000);
+            });
+        } else {
+            alert("La cantidad debe ser mayor a 0");
+        }
+    }
+</script>
+</body>
+</html>

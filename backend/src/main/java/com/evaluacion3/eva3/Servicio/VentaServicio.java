@@ -92,4 +92,8 @@ public class VentaServicio {
 
         return precioUnitario * cantidad;
     }
+
+    public void eliminarCotizacion(Long id) {
+        cotizacionRepositorio.deleteById(id);
+    }
 }

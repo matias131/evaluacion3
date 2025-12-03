@@ -46,4 +46,14 @@ public class CotizacionesControlador {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarCotizacion(@PathVariable Long id) {
+        try {
+            ventaServicio.eliminarCotizacion(id);
+            return ResponseEntity.ok("Venta eliminada correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al eliminar: " + e.getMessage());
+        }
+    }
 }
