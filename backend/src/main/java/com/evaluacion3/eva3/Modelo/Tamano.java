@@ -4,5 +4,5 @@ package com.evaluacion3.eva3.Modelo;
 public enum Tamano {
     GRANDE,
     MEDIANO,
-    PEQUEÑO
+    PEQUENO
 }
