@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración</title>
+    <title>Panel de Administracion</title>
+    <link rel="icon" href="data:,">
+
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f4f4; }
         h1 { text-align: center; color: #333; }
@@ -24,10 +26,14 @@
         label { font-weight: 600; font-size: 0.9em; margin-bottom: 5px; display: block; color: #555;}
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 
-        button { padding: 10px 20px; cursor: pointer; color: white; border: none; border-radius: 4px; font-size: 14px; transition: background 0.3s; }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        button { padding: 10px 20px; cursor: pointer; color: white; border: none; border-radius: 4px; font-size: 14px; transition: background 0.3s; font-weight: 600; }
         .btn-azul { background-color: #007bff; width: 100%; font-size: 16px; margin-top: 10px; }
         .btn-verde { background-color: #28a745; }
-        .btn-naranja { background-color: #ffc107; color: #333; font-weight: bold; }
+        .btn-naranja { background-color: #ffc107; color: #333; }
         .btn-rojo { background-color: #dc3545; margin-left: 5px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.95em; }
@@ -39,14 +45,15 @@
         .msg-error { color: #dc3545; font-size: 0.85em; font-weight: bold; display: none; margin-top: 4px; }
 
         .volver { display: block; text-align: center; margin-top: 40px; text-decoration: none; color: #555; font-weight: bold; font-size: 1.1em;}
+        .volver:hover { color: #000; }
     </style>
 </head>
 <body>
 
-<h1>Panel de Administración</h1>
+<h1>Panel de Administracion</h1>
 
 <div class="panel">
-    <h3>1. Agregar Nuevo Mueble</h3>
+    <h3>1. Crear Nuevo Mueble</h3>
     <div class="fila-flex">
         <div class="col-flex"><label>Nombre:</label><input type="text" id="nombreM"></div>
         <div class="col-flex"><label>Tipo:</label><input type="text" id="tipoM"></div>
@@ -54,40 +61,40 @@
     <div class="fila-flex">
         <div class="col-flex">
             <label>Precio ($):</label><input type="number" id="precioM">
-            <span id="err-precio" class="msg-error">⚠ No negativos</span>
+            <span id="err-precio" class="msg-error">No se permite un precio negativo o valor 0</span>
         </div>
         <div class="col-flex">
             <label>Stock:</label><input type="number" id="stockM">
-            <span id="err-stock" class="msg-error">⚠ No negativos</span>
+            <span id="err-stock" class="msg-error">No se permite stock negativo o 0</span>
         </div>
     </div>
     <div class="fila-flex">
         <div class="col-flex"><label>Material:</label><input type="text" id="materialM"></div>
         <div class="col-flex">
-            <label>Tamaño:</label>
+            <label>Tamano:</label>
             <select id="tamanoM">
-                <option value="PEQUENO">PEQUEÑO</option>
+                <option value="PEQUENO">PEQUENO</option>
                 <option value="MEDIANO">MEDIANO</option>
                 <option value="GRANDE">GRANDE</option>
             </select>
         </div>
     </div>
-    <button class="btn-azul" onclick="crearMueble()">Guardar Mueble (Por defecto ACTIVO)</button>
-    <div style="text-align: center;"><span id="msg-mueble" class="msg-estado">✔ Guardado</span></div>
+    <button class="btn-azul" onclick="crearMueble()">Guardar Mueble</button>
+    <div style="text-align: center;"><span id="msg-mueble" class="msg-estado">Guardado Correctamente</span></div>
 </div>
 
 <div class="panel">
-    <h3>2. Crear Nueva Variante</h3>
+    <h3>2. Crear Variante</h3>
     <div class="fila-flex">
         <div class="col-flex"><label>Nombre:</label><input type="text" id="nombreV"></div>
         <div class="col-flex"><label>Costo ($):</label><input type="number" id="costoV"></div>
     </div>
     <button class="btn-azul" style="width: auto;" onclick="crearVariante()">Guardar Variante</button>
-    <span id="msg-variante" class="msg-estado">✔ Guardado</span>
+    <span id="msg-variante" class="msg-estado">Guardado Correctamente</span>
 </div>
 
 <div class="panel">
-    <h3>3. Ventas Pendientes</h3>
+    <h3>3. Confirmar Cotización</h3>
     <table>
         <thead><tr><th>ID</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody id="tabla-ventas"></tbody>
@@ -95,24 +102,24 @@
 </div>
 
 <div class="panel">
-    <h3>4. Gestionar Inventario (Edición Rápida)</h3>
+    <h3>4. Editar Inventario</h3>
 
     <div style="max-height: 400px; overflow-y: auto; border: 1px solid #eee;">
         <table>
             <thead>
             <tr>
-                <th style="width: 20%;">ID Mueble</th>
-                <th style="width: 50%;">Estado</th>
-                <th style="width: 30%;">Acción</th>
+                <th style="width: 15%;">ID Mueble</th>
+                <th style="width: 25%;">Stock Actual</th>
+                <th style="width: 35%;">Estado</th>
+                <th style="width: 25%;">Accion</th>
             </tr>
             </thead>
-            <tbody id="tabla-inventario">
-            </tbody>
+            <tbody id="tabla-inventario"></tbody>
         </table>
     </div>
 </div>
 
-<a href="Menu.html" class="volver">← Volver al Menú Principal</a>
+<a href="Menu.html" class="volver"> <-Volver al Menu Principal</a>
 
 <script>
     let inventarioGlobal = [];
@@ -154,13 +161,36 @@
         data.forEach(c => {
             if (!c.esVenta) {
                 t.innerHTML += `<tr><td>#${c.idCotizacion}</td><td>$${c.totalCotizacion}</td><td style="color:orange; font-weight:bold;">Pendiente</td>
-                    <td><button class="btn-verde" onclick="confirmar(${c.idCotizacion})">Confirmar</button><button class="btn-rojo" onclick="eliminar(${c.idCotizacion})">Eliminar</button></td></tr>`;
+                    <td>
+                        <button class="btn-verde" onclick="confirmar(${c.idCotizacion}, this)">Confirmar</button>
+                        <button class="btn-rojo" onclick="eliminar(${c.idCotizacion}, this)">Eliminar</button>
+                    </td></tr>`;
             }
         });
     });
 
-    function confirmar(id) { fetch(`/api/cotizaciones/${id}/confirmarVenta`, { method: 'PUT' }).then(r => { if (r.ok) location.reload(); }); }
-    function eliminar(id) { if (confirm("¿Eliminar venta?")) fetch(`/api/cotizaciones/${id}`, { method: 'DELETE' }).then(r => { if (r.ok) location.reload(); }); }
+    function confirmar(id, boton) {
+        fetch(`/api/cotizaciones/${id}/confirmarVenta`, { method: 'PUT' })
+            .then(r => {
+                if (r.ok) {
+                    let celda = boton.parentNode;
+                    celda.innerHTML = "<span style='color:green; font-weight:bold;'>Listo</span>";
+                    setTimeout(() => location.reload(), 500);
+                }
+            });
+    }
+
+    function eliminar(id, boton) {
+        // Eliminamos la confirmacion window.confirm
+        fetch(`/api/cotizaciones/${id}`, { method: 'DELETE' })
+            .then(r => {
+                if (r.ok) {
+                    let celda = boton.parentNode;
+                    celda.innerHTML = "<span style='color:red; font-weight:bold;'>Listo</span>";
+                    setTimeout(() => location.reload(), 500);
+                }
+            });
+    }
 
     function cargarInventario() {
         fetch('/api/muebles').then(r => r.json()).then(muebles => {
@@ -175,14 +205,20 @@
                 tbody.innerHTML += `
                         <tr>
                             <td style="font-weight:bold;">#${m.idMueble}</td>
+
+                            <td>
+                                <input type="number" id="stock-${m.idMueble}" value="${m.stock}" style="width: 80px; text-align: center;">
+                            </td>
+
                             <td>
                                 <select id="estado-${m.idMueble}" style="max-width: 150px; font-weight:bold; color: #333;">
                                     <option value="ACTIVO" ${selectActivo} style="color:green;">ACTIVO</option>
                                     <option value="INACTIVO" ${selectInactivo} style="color:red;">INACTIVO</option>
                                 </select>
                             </td>
+
                             <td>
-                                <button class="btn-naranja" onclick="actualizarEstado(${m.idMueble})">
+                                <button class="btn-naranja" onclick="actualizarInventario(${m.idMueble}, this)">
                                     Guardar Cambio
                                 </button>
                             </td>
@@ -192,15 +228,21 @@
         });
     }
 
-    function actualizarEstado(id) {
+    function actualizarInventario(id, boton) {
         const nuevoEstado = document.getElementById('estado-' + id).value;
+        const nuevoStock = document.getElementById('stock-' + id).value;
+
+        if(nuevoStock < 0 || nuevoStock === '') {
+            alert("El stock no puede ser negativo");
+            return;
+        }
 
         const muebleOriginal = inventarioGlobal.find(m => m.idMueble === id);
-
         if (!muebleOriginal) return;
 
         const muebleActualizado = {
             ...muebleOriginal,
+            stock: parseInt(nuevoStock),
             estado: nuevoEstado
         };
 
@@ -210,9 +252,9 @@
             body: JSON.stringify(muebleActualizado)
         }).then(res => {
             if(res.ok) {
-                location.reload();
-            } else {
-                alert("Error al actualizar.");
+                let celda = boton.parentNode;
+                celda.innerHTML = "<span style='color:blue; font-weight:bold;'>Listo</span>";
+                setTimeout(() => location.reload(), 500);
             }
         });
     }

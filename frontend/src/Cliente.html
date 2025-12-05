@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Catálogo Clientes</title>
+    <link rel="icon" href="data:,">
     <style>
         body { font-family: sans-serif; padding: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -17,7 +18,7 @@
     </style>
 </head>
 <body>
-<h1>Catálogo de Muebles</h1>
+<h1>Crear Cotización</h1>
 <div id="catalogo">
     <table>
         <thead>
@@ -26,7 +27,7 @@
             <th>Tipo</th>
             <th>Tamaño</th> <th>Precio Base</th>
             <th>Stock</th>
-            <th>Variante (Opcional)</th>
+            <th>Variante (Solo si quiere)</th>
             <th>Cantidad</th>
             <th>Acción</th>
         </tr>
@@ -35,7 +36,7 @@
     </table>
 </div>
 <div id="mensaje-exito"></div>
-<br> <a href="Menu.html" class="volver">← Volver al Menú</a>
+<br> <a href="Menu.html" class="volver"> <-Volver al Menú</a>
 
 <script>
     let variantesGlobales = [];
@@ -90,7 +91,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orden)
             }).then(res => res.json()).then(data => {
                 msg.style.display = 'block';
-                msg.innerHTML = `<strong>¡Pedido Enviado!</strong> ID: #${data.idCotizacion} | Total: $${data.totalCotizacion}`;
+                msg.innerText = "Cotizacion confirmada para el ID del producto " + data.idCotizacion;
                 setTimeout(() => { msg.style.display = 'none'; location.reload(); }, 3000);
             });
         } else {
