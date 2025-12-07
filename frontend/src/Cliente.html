@@ -2,19 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo Clientes</title>
+    <title>Cotización</title>
     <link rel="icon" href="data:,">
     <style>
         body { font-family: sans-serif; padding: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: middle; }
         th { background-color: #f2f2f2; }
-        button { background-color: #4CAF50; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
-        button:hover { background-color: #45a049; }
+        button { background-color: #007bff; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #007bff; }
         input[type="number"] { width: 50px; padding: 5px; }
         select { padding: 5px; }
         .volver { display: inline-block; margin-top: 20px; text-decoration: none; color: #333; font-weight: bold;}
-        #mensaje-exito { margin-top: 15px; padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; display: none; }
+        #mensaje-exito { margin-top: 15px; padding: 15px; background-color: #f0f0f0; color: #000000; border: 1px solid #c3e6cb; border-radius: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -91,7 +91,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orden)
             }).then(res => res.json()).then(data => {
                 msg.style.display = 'block';
-                msg.innerText = "Cotizacion confirmada para el ID del producto " + data.idCotizacion;
+                msg.innerText = "Cotizacion confirmada";
                 setTimeout(() => { msg.style.display = 'none'; location.reload(); }, 3000);
             });
         } else {
