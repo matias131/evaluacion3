@@ -181,7 +181,6 @@
     }
 
     function eliminar(id, boton) {
-        // Eliminamos la confirmacion window.confirm
         fetch(`/api/cotizaciones/${id}`, { method: 'DELETE' })
             .then(r => {
                 if (r.ok) {
